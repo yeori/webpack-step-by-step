@@ -1,5 +1,7 @@
 import util from "./util/event-util";
 import parser from "./parser";
+import "./assets/main.css";
+
 function Calc() {
   const el = document.querySelector("#expr");
   el.addEventListener(
