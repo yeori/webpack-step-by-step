@@ -75,6 +75,10 @@ module.exports = {
         test: /\.css$/i,
         use: ["style-loader", "css-loader"],
       },
+      {
+        test: /\.scss$/i,
+        use: ["style-loader", "css-loader", "sass-loader"],
+      },
     ],
   }
   ...
@@ -87,3 +91,34 @@ loader 순서가 중요하다(뒤에서 앞으로 실행됨)
 
 - **css-loader** - css파일을 javascript 모듈로 변환
 - **style-loader** - css모듈(js 모듈)을 본문에 `<style>..</style>` 태그로 삽입함
+
+### 3.2. scss 처리
+
+`sass-loader`를 추가함
+
+```
+npm install --save-dev sass-loader node-sass
+```
+
+`webpack.config.js`에서 `scss`파일을 `sass-loader`와 연결함
+
+```javascript
+module.exports = {
+  ...
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        use: ["style-loader", "css-loader"],
+      },
+      {
+        test: /\.scss$/i,
+        use: ["style-loader", "css-loader", "sass-loader"],
+      },
+    ],
+  }
+  ...
+}
+```
+
+- `sass-loader`를 맨뒤에 넣어서 먼저 실행되게 함

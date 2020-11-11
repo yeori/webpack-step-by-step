@@ -1,6 +1,6 @@
 import util from "./util/event-util";
 import parser from "./parser";
-import "./assets/main.css";
+import "./assets/main.scss";
 
 function Calc() {
   const el = document.querySelector("#expr");
