@@ -218,7 +218,7 @@ module.exports = {
 
 - webpack.dev.js
 - webpack.prod.js
-- webpack.config.js(기존)
+- webpack.config.js(기존 설정, 공유해서 사용하고 싶음)
 
 #### webpack.config.js
 
@@ -264,7 +264,7 @@ module.exports = {
 };
 ```
 
-- 개발 환경에서는 빌드된 js 파일 이름에 hash값을 붙이지 않고 싶음
+- **filename: "main.js"** - 개발 환경에서는 빌드된 js 파일 이름에 hash값을 붙이지 않고 싶음
 
 #### webpack.prod.js
 
@@ -279,13 +279,13 @@ module.exports = {
 };
 ```
 
-- 배포 환경에서는 빌드된 js 파일 이름에 hash값을 붙여서 생성하고 싶음
+- **filename: "main.[contenthash].js"** - 배포 환경에서는 빌드된 js 파일 이름에 hash값을 붙여서 생성하고 싶음
 
 #### merge plugin 설치
 
 이렇게 설정파일을 쪼갰다고해서 자동으로 `webpack.config.js`를 읽어들이지 않습니다.
 
-공통 설정 파일을 병합해주는 라이브러리를 설치해서 사용해야 함
+공통 설정 파일을 병합해주는 라이브러리를 설치해서 사용해야 함(뭐 좀 하려면 죄다 플러그인..)
 
 ```
 npm install --save-dev webpack-merge
@@ -305,13 +305,14 @@ const merge = require("webpack-merge");
 module.exports = merge(commonConfig, {
   mode: "development",
   output: {
-    path: path.resolve(__dirname, "dist/js"),
-    filename: "main.js",
+    path: path.resolve(__dirname, "dist"),
+    filename: "js/main.js",
   },
 });
 ```
 
 ```javascript
+// 2. webpack.prod.js
 const path = require("path");
 
 const commonConfig = require("./webpack.config");
@@ -320,15 +321,15 @@ const merge = require("webpack-merge");
 module.exports = merge(commonConfig, {
   mode: "production",
   output: {
-    path: path.resolve(__dirname, "dist/js"),
-    filename: "main.[contenthash].js",
+    path: path.resolve(__dirname, "dist"),
+    filename: "js/main.[contenthash].js",
   },
 });
 ```
 
 이렇게 개발환경, 배포환경이 공통 설정을 읽어들인 후 각자의 환경 설정을 병합해서 빌드를 하게 됨.
 
-## npm run 명령어 분리
+#### npm run 명령어 분리
 
 그리고 빌드 명령어도 지금까지는 `npm run build`였지만, 두가지 환경에 따라 빌드하는 명령어로 변경하고 싶음
 
@@ -351,5 +352,16 @@ module.exports = merge(commonConfig, {
 아래와 같이 명령어를 분리함
 
 ```javascript
-
+{
+  ...,
+  "scripts": {
+    "build": "webpack --config webpack.prod.js",
+    "serve": "webpack --config webpack.dev.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  ...
+}
 ```
+
+`npm run build` 로 실행하면 배포 파일을 생성하고, `npm run serve`를 실행하면 개발 환경으로 파일을 생성함
+
