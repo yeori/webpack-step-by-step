@@ -122,3 +122,64 @@ module.exports = {
 ```
 
 - `sass-loader`를 맨뒤에 넣어서 먼저 실행되게 함
+
+### 3.3. html 파일에 js 파일 주입
+
+현재는 index.html 파일에 직접 js 파일을 import하고 있음
+
+```html
+-- /public/index.html
+
+<html lang="en">
+  <head>
+    ...
+  </head>
+  <body>
+    ...
+  <body>
+  <script src="/dist/main.js"></script><!--템플릿 파일에 js파일을 import한 상태 -->
+</html>
+```
+
+최종적으로 산출되는 js 파일을 템플릿 파일에 자동으로 주입하는 플러그인을 사용함
+
+템플릿 파일에서는 js 파일을 임포트하는 코드를 제거함
+
+```html
+-- /public/index.html
+
+<html lang="en">
+  <head>
+    ...
+  </head>
+  <body>
+    ...
+  <body>
+  <!--<script src="/dist/main.js"></script> js파일을 import하지 않음 -->
+</html>
+```
+
+webpack으로 빌드한 js 를 템플릿 파일에 자동 삽입해주는 플러그인을 설치함
+
+```
+npm install --save-dev html-webpack-plugin
+```
+
+그리고 `webpack.config.js`에서 플러그인 설치 코드를 추가함
+
+```javascript
+module.exports = {
+  entry: "./src/index.js",
+  output: { ... },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: "./public/index.html",
+    }),
+  ],
+  module: {
+    rules: [...],
+  },
+};
+```
+
+- **template** - html파일을 생성할 때 사용할 템플릿 경로를 지정함. 지금까지 `/public/index.html` 을 사용해왔으므로 이제 이 파일을 템플릿으로 사용합니다.
