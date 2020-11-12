@@ -73,8 +73,6 @@ webpack 설치후 `package.json`에 컴파일 명령어를 추가함
 npm run build
 ```
 
-
-
 ## 3. Webpack 설정 과정(Loader, Plugin)
 
 ### 3.1. css처리(Loader)
@@ -365,3 +363,80 @@ module.exports = merge(commonConfig, {
 
 `npm run build` 로 실행하면 배포 파일을 생성하고, `npm run serve`를 실행하면 개발 환경으로 파일을 생성함
 
+### 3.5. 개발용 테스트 서버 실행
+
+개발중에는 결과물을 서버에 띄워서 확인해보고 싶음
+
+서버가 없기때문에 `webpack-dev-server`를 설치해서 개발 환경을 개선함
+
+```
+npm install --save-dev webpack-dev-server
+```
+
+그리고 `package.json`에서 개발 환경 명령어를 아래와 같이 변경함
+
+```javascript
+{
+  ...,
+  "scripts": {
+    ...,
+    "serve": "webpack-dev-server --config webpack.dev.js --open",
+    ...
+  },
+}
+```
+
+- `npm run serve` 를 실행하면 `webpack.de.js` 설정 파일을 읽어들여서 임시로 서버를 실행함
+
+위와같이 실행했을때 아래와 같은 오류가 발생할 수 있음
+
+```
+Error: Cannot find module 'webpack-cli/bin/config-yargs'
+Require stack:
+
+- D:\ws-node\webpack-tutorial\node_modules\webpack-dev-server\bin\webpack-dev-server.js
+ at Function.Module.\_resolveFilename (internal/modules/cjs/loader.js:966:15)
+ at Function.Module.\_load (internal/modules/cjs/loader.js:842:27)
+ at Module.require (internal/modules/cjs/loader.js:1026:19)
+ at require (internal/modules/cjs/helpers.js:72:18)
+ at Object.<anonymous> (D:\ws-node\webpack-tutorial\node_modules\webpack-dev-server\bin\webpack-dev-server.js:65:1)
+ at Module.\_compile (internal/modules/cjs/loader.js:1138:30)
+ at Object.Module.\_extensions..js (internal/modules/cjs/loader.js:1158:10)
+ at Module.load (internal/modules/cjs/loader.js:986:32)
+ at Function.Module.\_load (internal/modules/cjs/loader.js:879:14)
+ at Function.executeUserEntryPoint [as runMain] (internal/modules/run_main.js:71:12) {
+ code: 'MODULE_NOT_FOUND',
+```
+
+이러한 경우는 명령어를 아래와 같이 변경합니다.
+
+```javascript
+{
+  "scripts": {
+    ...,
+    "serve": "webpack serve --config webpack.dev.js",
+    ...
+  },
+}
+```
+
+- [https://github.com/webpack/webpack-dev-server/issues/2759](https://github.com/webpack/webpack-dev-server/issues/2759)
+
+`npm run serve` 명령어를 실행하면 아래와같이 서버 실행 정보가 출력됩니다.
+
+```
+i ｢wds｣: Project is running at http://localhost:8080/
+i ｢wds｣: webpack output is served from undefined
+i ｢wds｣: Content not from webpack is served from D:\ws-node\webpack-tutorial
+(node:14124) [DEP_WEBPACK_COMPILATION_ASSETS] DeprecationWarning: Compilation.assets will be frozen in future, all modifications are deprecated.
+BREAKING CHANGE: No more changes should happen to Compilation.assets after sealing the Compilation.
+        Do changes to assets earlier, e. g. in Compilation.hooks.processAssets.
+        Make sure to select an appropriate stage from Compilation.PROCESS_ASSETS_STAGE_*.
+i ｢wdm｣: asset js/main.js 575 KiB [emitted] (name: main)
+asset index.html 432 bytes [emitted]
+runtime modules 1.25 KiB 6 modules
+```
+
+- `http://localhost:8080` 으로 접속함
+- 소스 파일 수정 시 실시간으로 업데이트 됨
+- 빌드된 결과물은 메모리에 올라가서 webpack-dev-server가 사용함(즉 dist 디렉토리에는 빌드 결과가 생성되지 않음)
